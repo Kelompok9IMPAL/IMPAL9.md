@@ -1,0 +1,114 @@
+CREATE TABLE users (
+    id_user INT PRIMARY KEY AUTO_INCREMENT,
+    nama VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('staff', 'manajer') NOT NULL,
+    tim VARCHAR(50)
+);
+
+CREATE TABLE targets (
+    id_target INT PRIMARY KEY AUTO_INCREMENT,
+    id_user INT,
+    bulan INT CHECK (bulan BETWEEN 1 AND 12),
+    tahun INT,
+    target_leads INT DEFAULT 0,
+    target_closing INT DEFAULT 0,
+    target_revenue DECIMAL(15, 2) DEFAULT 0.00,
+    target_roas DECIMAL(5, 2) DEFAULT 0.00,
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
+CREATE TABLE daily_logs (
+    id_log INT PRIMARY KEY AUTO_INCREMENT,
+    id_user INT,
+    tanggal DATE NOT NULL,
+    jml_leads INT DEFAULT 0,
+    jml_closing INT DEFAULT 0,
+    nominal_revenue DECIMAL(15, 2) DEFAULT 0.00,
+    nominal_spend DECIMAL(15, 2) DEFAULT 0.00,
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
+CREATE TABLE kpi_results (
+    id_kpi INT PRIMARY KEY AUTO_INCREMENT,
+    id_user INT,
+    bulan INT,
+    tahun INT,
+    total_leads INT,
+    total_closing INT,
+    total_revenue DECIMAL(15, 2),
+    avg_roas DECIMAL(5, 2),
+    perf_score DECIMAL(5, 2),
+    FOREIGN KEY (id_user) REFERENCES users(id_user) ON DELETE CASCADE
+);
+
+CREATE TABLE evaluations (
+    id_evaluasi INT PRIMARY KEY AUTO_INCREMENT,
+    id_kpi INT,
+    id_manajer INT,
+    catatan_evaluasi TEXT,
+    tanggal_input TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_kpi) REFERENCES kpi_results(id_kpi) ON DELETE CASCADE,
+    FOREIGN KEY (id_manajer) REFERENCES users(id_user)
+);
+
+INSERT INTO users (nama, email, password, role, tim) VALUES
+('Putra Nirbana', 'putra@company.com', 'pass123', 'manajer', 'Marketing A'),
+('Abimola Prima', 'abimola@company.com', 'pass124', 'staff', 'Marketing A'),
+('Muhammad Radith', 'radith@company.com', 'pass125', 'staff', 'Marketing A'),
+('Rizky Febrianto', 'rizky@company.com', 'pass126', 'manajer', 'Marketing B'),
+('Muhammad Gavin', 'gavin@company.com', 'pass127', 'staff', 'Marketing B'),
+('Raisya Latifah', 'raisya@company.com', 'pass128', 'staff', 'Marketing B'),
+('Fahd Asyhab', 'fahd@company.com', 'pass129', 'staff', 'Marketing A'),
+('Atha Murthad', 'atha@company.com', 'pass130', 'staff', 'Marketing B'),
+('Ihsan Dwika', 'ihsan@company.com', 'pass131', 'staff', 'Marketing A'),
+('Arief Saepul', 'arief@company.com', 'pass132', 'staff', 'Marketing B');
+
+INSERT INTO targets (id_user, bulan, tahun, target_leads, target_closing, target_revenue, target_roas) VALUES
+(2, 4, 2026, 100, 10, 50000000.00, 4.00),
+(3, 4, 2026, 120, 12, 60000000.00, 4.50),
+(5, 4, 2026, 80, 8, 40000000.00, 3.50),
+(6, 4, 2026, 90, 9, 45000000.00, 3.80),
+(7, 4, 2026, 110, 11, 55000000.00, 4.20),
+(8, 4, 2026, 70, 7, 35000000.00, 3.00),
+(9, 4, 2026, 130, 13, 65000000.00, 5.00),
+(10, 4, 2026, 85, 8, 42000000.00, 3.70),
+(2, 5, 2026, 110, 11, 55000000.00, 4.10),
+(3, 5, 2026, 130, 13, 65000000.00, 4.60);
+
+INSERT INTO daily_logs (id_user, tanggal, jml_leads, jml_closing, nominal_revenue, nominal_spend) VALUES
+(2, '2026-04-01', 5, 1, 5000000.00, 1000000.00),
+(3, '2026-04-01', 4, 0, 0.00, 1200000.00),
+(5, '2026-04-01', 6, 1, 4500000.00, 1500000.00),
+(6, '2026-04-02', 3, 1, 3000000.00, 800000.00),
+(7, '2026-04-02', 7, 2, 10000000.00, 2000000.00),
+(8, '2026-04-02', 2, 0, 0.00, 500000.00),
+(9, '2026-04-03', 8, 1, 7000000.00, 1400000.00),
+(10, '2026-04-03', 4, 1, 4000000.00, 1000000.00),
+(2, '2026-04-04', 6, 2, 12000000.00, 2500000.00),
+(3, '2026-04-04', 5, 1, 5500000.00, 1100000.00);
+
+INSERT INTO kpi_results (id_user, bulan, tahun, total_leads, total_closing, total_revenue, avg_roas, perf_score) VALUES
+(2, 3, 2026, 95, 9, 48000000.00, 4.20, 85.50),
+(3, 3, 2026, 110, 11, 58000000.00, 4.40, 90.00),
+(5, 3, 2026, 75, 7, 35000000.00, 3.40, 78.00),
+(6, 3, 2026, 88, 8, 42000000.00, 3.70, 82.50),
+(7, 3, 2026, 105, 12, 60000000.00, 4.50, 95.00),
+(8, 3, 2026, 65, 5, 25000000.00, 2.80, 65.00),
+(9, 3, 2026, 125, 13, 64000000.00, 4.90, 98.00),
+(10, 3, 2026, 82, 8, 41000000.00, 3.60, 80.00),
+(2, 2, 2026, 90, 8, 40000000.00, 4.00, 84.00),
+(3, 2, 2026, 100, 10, 50000000.00, 4.10, 88.00);
+
+INSERT INTO evaluations (id_kpi, id_manajer, catatan_evaluasi) VALUES
+(1, 1, 'Abimola bekerja sangat baik di Marketing A.'),
+(2, 1, 'Radith hampir mencapai semua KPI bulanan.'),
+(3, 4, 'Gavin perlu meningkatkan ROAS iklan di bulan depan.'),
+(4, 4, 'Raisya cukup stabil, tapi konversi closing bisa dioptimalkan.'),
+(5, 1, 'Fahd menunjukkan performa luar biasa di lead generation.'),
+(6, 4, 'Atha perlu sesi mentoring tambahan untuk strategi closing.'),
+(7, 1, 'Ihsan melampaui ekspektasi revenue tim A.'),
+(8, 4, 'Arief performanya standar, perlu inovasi dalam campaign.'),
+(9, 1, 'Evaluasi historis: Abimola menunjukkan tren positif.'),
+(10, 1, 'Evaluasi historis: Radith konsisten dengan targetnya.');
